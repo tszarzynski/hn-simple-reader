@@ -4,10 +4,11 @@ import { getMoreStories, getRecentStories } from '../store/storiesSlice';
 import Story from './Story'
 import Stories from './Stories'
 import MoreStories from './MoreStories';
+import Error from './Error';
 
 const List = () => {
     const dispatch = useDispatch()
-    const { stored, isFetching } = useSelector((state) => state.stories)
+    const { stored, isFetching, error } = useSelector((state) => state.stories)
 
     useEffect(() => {
 
@@ -28,6 +29,7 @@ const List = () => {
 
     return (
         <Stories>
+            {error && (<Error errorMsg={error}></Error>)}
             {stored.map(story => <Story key={story.id} story={story} />)}
             {isFetching && (<MoreStories></MoreStories>)}
         </Stories>

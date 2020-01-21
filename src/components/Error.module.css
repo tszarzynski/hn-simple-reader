@@ -1,0 +1,14 @@
+.container {
+    padding: 2em;
+    text-align: center;
+    border: 1px dashed red;
+    color: red;
+    margin: 3em 1em 3em 1em;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1;
+}

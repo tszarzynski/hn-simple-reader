@@ -1,5 +1,13 @@
 .item {
-    margin: 0 1em 2em 1em;
+    margin: 0 1em 3em 1em;
+}
+
+.header{
+    margin-bottom: 1em;
+}
+
+.title {
+    margin-bottom: 0;
 }
 
 .link {
@@ -7,8 +15,13 @@
     text-decoration: none;
 }
 
+.link:hover {
+    color: #ff6600;
+}
+
 .domain {
-    font-size: 0.5em
+    font-size: 0.5em;
+    opacity: 0.6;
 }
 
 .details {
@@ -20,7 +33,7 @@
 .details > span {
     display: flex;
     font-size: 0.8em;
-    opacity: 0.8;
+    opacity: 0.6;
 }
 
 @media (min-width: 768px) {
