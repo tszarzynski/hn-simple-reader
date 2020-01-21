@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { getMoreStories, getRecentStories } from '../store/storiesSlice';
 
-const useInfiniteScroll = (callback, forceCallback = false) => {
-    const [isFetching, setIsFetching] = useState(forceCallback);
+const useInfiniteScroll = (callback) => {
+    const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
         function handleScroll() {
@@ -18,6 +20,7 @@ const useInfiniteScroll = (callback, forceCallback = false) => {
         if (!isFetching) return;
         console.log('CAllback')
         callback();
+        setIsFetching(false)
     }, [isFetching, callback]);
 
 
@@ -26,31 +29,23 @@ const useInfiniteScroll = (callback, forceCallback = false) => {
 };
 
 const List = () => {
-    const [listItems, setListItems] = useState([]);
-    const [isFetching, setIsFetching] = useInfiniteScroll(fetchLatestNews, false);
+    const dispatch = useDispatch()
+    const { stories } = useSelector((state) => state.stories)
+    const [isFetching, setIsFetching] = useInfiniteScroll(fetchLatestNews);
 
 
     function fetchLatestNews() {
-        fetch('https://hacker-news.firebaseio.com/v0/jobstories.json')
-            .then(response => response.json())
-            .then((data) => {
-                data.forEach((newsId) => {
-                    fetch(` https://hacker-news.firebaseio.com/v0/item/${newsId}.json`)
-                        .then(response => response.json())
-                        .then((itemDetail) => {
-
-                            setListItems(prevState => ([...prevState, itemDetail]))
-                        })
-                });
-
-                setIsFetching(false);
-            })
+        dispatch(getMoreStories())
     }
+
+    useEffect(() => {
+        dispatch(getRecentStories())
+    }, [dispatch])
 
     return (
         <>
-            <ul className="list-group mb-2">
-                {listItems.map((post, i) => <li key={post.id} className="list-group-item">{post.title}</li>)}
+            <ul>
+                {stories.map((story) => <li key={story.id} >{story.title}</li>)}
             </ul>
             {isFetching && 'Fetching more list items...'}
         </>
