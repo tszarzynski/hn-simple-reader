@@ -1,9 +1,9 @@
 .list {
-    list-style: none;
-    padding: 0;
-    
-    margin: 0 auto;
-    max-width: 800px;
+  list-style: none;
+  padding: 0;
+
+  margin: 0 auto;
+  max-width: 800px;
 }
 
 .list > li {
@@ -11,7 +11,8 @@
   animation: come-in 0.8s ease forwards;
 }
 
-
 @keyframes come-in {
-  to { transform: translateY(0); }
+  to {
+    transform: translateY(0);
+  }
 }

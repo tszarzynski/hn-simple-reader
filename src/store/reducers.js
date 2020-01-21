@@ -1,8 +1,8 @@
-import { combineReducers } from 'redux'
-import storiesReducer from './storiesSlice'
+import { combineReducers } from "redux";
+import storiesReducer from "./storiesSlice";
 
 const rootReducer = combineReducers({
-    stories: storiesReducer,
-})
+  stories: storiesReducer
+});
 
-export default rootReducer
+export default rootReducer;

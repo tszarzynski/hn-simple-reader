@@ -1,47 +1,47 @@
 .item {
-    margin: 0 1em 3em 1em;
+  margin: 0 1em 3em 1em;
 }
 
-.header{
-    margin-bottom: 1em;
+.header {
+  margin-bottom: 1em;
 }
 
 .title {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .link {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 .link:hover {
-    color: #ff6600;
+  color: #ff6600;
 }
 
 .domain {
-    font-size: 0.5em;
-    opacity: 0.6;
+  font-size: 0.5em;
+  opacity: 0.6;
 }
 
 .details {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .details > span {
-    display: flex;
-    font-size: 0.8em;
-    opacity: 0.6;
+  display: flex;
+  font-size: 0.8em;
+  opacity: 0.6;
 }
 
 @media (min-width: 768px) {
-    .details {
-        justify-content: flex-end;
-    }
+  .details {
+    justify-content: flex-end;
+  }
 
-    .details > span {
-        margin-left: 1em;
-    }
+  .details > span {
+    margin-left: 1em;
+  }
 }
