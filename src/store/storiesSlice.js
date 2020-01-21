@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import api from '../services';
 
-const MAX_ITEMS_TO_LOAD = 100;
+const INITIAL_ITEMS_TO_LOAD = 30;
+const MAX_ITEMS_TO_LOAD = 10;
 
 const getRatio = ids => {
     const newest = ids[0];
@@ -26,6 +27,12 @@ const storiesSlice = createSlice({
         },
         fetchRecentStoryIdsSuccess(state, action) {
             const { ids } = action.payload
+
+            const duplicates = ids.reduce(function (acc, el, i, arr) {
+                if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el); return acc;
+            }, []);
+            console.log(duplicates)
+
             state.ids = state.ids.concat(ids);
         },
 
@@ -91,7 +98,7 @@ export const getRecentStories = () => async (dispatch, getState) => {
     return dispatch(fetchRecentStoryIds())
         .then(() => {
             const ids = getState().stories.ids;
-            return dispatch(fetchStoryByIds(ids.slice(0, MAX_ITEMS_TO_LOAD)))
+            return dispatch(fetchStoryByIds(ids.slice(0, INITIAL_ITEMS_TO_LOAD)))
         }).then(() => {
             dispatch(fetchingStop())
         })
@@ -110,18 +117,20 @@ export const getMoreStories = () => async (dispatch, getState) => {
             console.log('mo more left')
         } else if (stored.length < ids.length) {
             // fetch more by ids
+
             const rangeFrom = stored.length;
             const rangeTo = stored.length + MAX_ITEMS_TO_LOAD;
-
+            console.log('fetch more by ids', rangeFrom, rangeTo)
             dispatch(fetchingStart())
-            dispatch(fetchStoryByIds(ids.slice(rangeFrom, rangeTo))).then(() => {
+            return dispatch(fetchStoryByIds(ids.slice(rangeFrom, rangeTo))).then(() => {
                 dispatch(fetchingStop())
             })
 
         } else {
             // go backward from last id
+            console.log('go backward from last id')
             dispatch(fetchingStart())
-            dispatch(fetchStoriesFromId(lastStory.id - 1)).then(() => {
+            return dispatch(fetchStoriesFromId(lastStory.id - 1)).then(() => {
                 dispatch(fetchingStop())
             })
         }

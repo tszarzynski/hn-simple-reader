@@ -12,7 +12,7 @@ const List = () => {
     useEffect(() => {
 
         function handleScroll() {
-            if (isFetching || window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight - 1) return;
+            if (isFetching || window.innerHeight + document.documentElement.scrollTop < document.documentElement.offsetHeight * 0.85) return;
             dispatch(getMoreStories())
         }
 

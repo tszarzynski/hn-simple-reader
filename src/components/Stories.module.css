@@ -5,3 +5,13 @@
     margin: 0 auto;
     max-width: 800px;
 }
+
+.list > li {
+  transform: translateY(150px);
+  animation: come-in 0.8s ease forwards;
+}
+
+
+@keyframes come-in {
+  to { transform: translateY(0); }
+}
