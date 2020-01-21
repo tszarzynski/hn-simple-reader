@@ -17,8 +17,10 @@ const List = () => {
         isFetching ||
         window.innerHeight + document.documentElement.scrollTop <
           document.documentElement.offsetHeight * 0.85
+
       )
         return;
+        // get more stories if scrolled to the bottom of the screen
       dispatch(getMoreStories());
     }
 
@@ -34,7 +36,7 @@ const List = () => {
   return (
     <Stories>
       {error && <Error errorMsg={error}></Error>}
-      {stored.map(story => (
+      {stored.filter(story => story && !story.dead && !story.deleted).map(story => (
         <Story key={story.id} story={story} />
       ))}
       {isFetching && <MoreStories></MoreStories>}

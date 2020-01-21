@@ -36,7 +36,8 @@ const storiesSlice = createSlice({
     },
     fetchStoryByIdsSuccess(state, action) {
       const { stories } = action.payload;
-      state.stored = state.stored.concat(stories.filter(Boolean));
+
+      state.stored = state.stored.concat(stories);
 
       //https:stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
       state.avgOccuranceRatio =
@@ -78,6 +79,7 @@ export const fetchStoryIds = () => async dispatch => {
 
     return dispatch(fetchStoryIdsSuccess({ ids }));
   } catch (error) {
+   
     dispatch(notifyError({ error: error.message }));
     return Promise.reject(error);
   }
@@ -88,13 +90,20 @@ export const fetchStoryIds = () => async dispatch => {
  */
 export const fetchStoryByIds = ids => async dispatch => {
   try {
+    console.log(ids)
     const requests = ids.map(id => api.fetch(`/item/${id}.json`, {}));
     const responses = await Promise.all(requests);
-    const stories = await Promise.all(
+    const items = await Promise.all(
       responses.map(response => response.json())
     );
+
+    // handle null responses
+    const stories = items.map((story, i) => story !== null ? story : ({id: ids[i], dead: true}))
+
+    // stories = stories.filter(story => story !== null)
     return dispatch(fetchStoryByIdsSuccess({ stories }));
   } catch (error) {
+   
     dispatch(notifyError({ error: error.message }));
     return Promise.reject(error);
   }
@@ -159,6 +168,8 @@ export const getRecentStories = () => async (dispatch, getState) => {
 export const getMoreStories = () => async (dispatch, getState) => {
   const state = getState();
 
+  if (state.stories.isFetching) return;
+
   try {
     const ids = state.stories.ids;
     const stored = state.stories.stored;
@@ -168,13 +179,13 @@ export const getMoreStories = () => async (dispatch, getState) => {
       // no more stories to fetch from HN
       console.log("mo more left");
     } else if (stored.length < ids.length) {
-      // fetch more by ids
+      // fetch more stories from ids pool 
 
       const rangeFrom = stored.length;
       const rangeTo = stored.length + MAX_ITEMS_TO_LOAD;
 
       dispatch(fetchingStart());
-
+      console.log(rangeFrom, rangeTo)
       return dispatch(fetchStoryByIds(ids.slice(rangeFrom, rangeTo)))
         .then(() => {
           dispatch(fetchingStop());
