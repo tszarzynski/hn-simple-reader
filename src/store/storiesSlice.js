@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import api from '../services';
 
-const POSTS_ON_UPDATE = 50;
+const MAX_ITEMS_TO_LOAD = 50;
 
 const storiesSlice = createSlice({
     name: 'stories',
     initialState: {
         ids: [],
-        stories: [],
+        stored: [],
         isFetching: false,
     },
     reducers: {
@@ -18,13 +18,13 @@ const storiesSlice = createSlice({
             state.isFetching = false;
         },
         fetchRecentStoryIdsSuccess(state, action) {
-            const { ids } = action.payload
-            state.ids = state.ids.concat(ids);
+            const { storyIds } = action.payload
+            state.ids = state.ids.concat(storyIds);
         },
 
         fetchStoryByIdsSuccess(state, action) {
             const { stories } = action.payload
-            state.stories = state.stories.concat(stories);
+            state.stored = state.stored.concat(stories.filter(Boolean));
         },
     }
 })
@@ -35,39 +35,36 @@ export default storiesSlice.reducer
 
 export const fetchRecentStoryIds = () => async dispatch => {
     try {
-        dispatch(fetchingStart())
         const response = await api.fetch('/newstories.json', {})
-        const ids = await response.json()
-        dispatch(fetchRecentStoryIdsSuccess({ ids }))
-        dispatch(fetchingStop())
+        const storyIds = await response.json()
+        return dispatch(fetchRecentStoryIdsSuccess({ storyIds }))
     } catch (error) {
-        dispatch(fetchingStop())
         console.log(error)
     }
 }
 
-export const fetchStoryByIds = (ids) => async dispatch => {
+export const fetchStoryByIds = (storyIds) => async dispatch => {
     try {
-        dispatch(fetchingStart())
-
-        const requests = ids.map(id => api.fetch(`/item/${id}.json`, {}));
+        const requests = storyIds.map(id => api.fetch(`/item/${id}.json`, {}));
         const responses = await Promise.all(requests);
         const stories = await Promise.all(responses.map(response => response.json()))
-
-        dispatch(fetchStoryByIdsSuccess({ stories }))
-        dispatch(fetchingStop())
+        return dispatch(fetchStoryByIdsSuccess({ stories }))
     } catch (error) {
-        dispatch(fetchingStop())
         console.log(error)
     }
 }
 
 
 export const getRecentStories = () => async (dispatch, getState) => {
+
+    dispatch(fetchingStart())
+
     return dispatch(fetchRecentStoryIds())
         .then(() => {
             const storyIds = getState().stories.ids;
-            return dispatch(fetchStoryByIds(storyIds.slice(0, POSTS_ON_UPDATE)))
+            return dispatch(fetchStoryByIds(storyIds.slice(0, MAX_ITEMS_TO_LOAD)))
+        }).then(() => {
+            dispatch(fetchingStop())
         })
 }
 
@@ -76,20 +73,24 @@ export const getMoreStories = () => async (dispatch, getState) => {
 
     try {
         const storyIds = state.stories.ids;
-        const storedStories = state.stories.stories;
+        const storedStories = state.stories.stored;
         const lastStory = storedStories[storedStories.length - 1];
 
         if (storedStories.length > 0 && lastStory.id === 0) {
+            // no more stories to fetch from HN
             console.log('mo more left')
         } else if (storedStories.length < storyIds.length) {
+            // fetch more by ids
             const rangeFrom = storedStories.length;
-            const rangeTo = storedStories.length + POSTS_ON_UPDATE;
+            const rangeTo = storedStories.length + MAX_ITEMS_TO_LOAD;
 
             dispatch(fetchingStart())
-            dispatch(fetchStoryByIds(storyIds.slice(rangeFrom, rangeTo)))
-            dispatch(fetchingStop())
+            dispatch(fetchStoryByIds(storyIds.slice(rangeFrom, rangeTo))).then(() => {
+                dispatch(fetchingStop())
+            })
+
         } else {
-            console.log('fettch bext')
+            console.log('fetch more going backward')
         }
     } catch (error) {
         console.log(error)
