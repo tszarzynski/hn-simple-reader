@@ -79,7 +79,7 @@ export const fetchStoryIds = () => async dispatch => {
 
     return dispatch(fetchStoryIdsSuccess({ ids }));
   } catch (error) {
-   
+
     dispatch(notifyError({ error: error.message }));
     return Promise.reject(error);
   }
@@ -90,7 +90,7 @@ export const fetchStoryIds = () => async dispatch => {
  */
 export const fetchStoryByIds = ids => async dispatch => {
   try {
-   
+
     const requests = ids.map(id => api.fetch(`/item/${id}.json`, {}));
     const responses = await Promise.all(requests);
     const items = await Promise.all(
@@ -98,12 +98,12 @@ export const fetchStoryByIds = ids => async dispatch => {
     );
 
     // handle null responses
-    const stories = items.map((story, i) => story !== null ? story : ({id: ids[i], dead: true}))
+    const stories = items.map((story, i) => story !== null ? story : ({id: ids[i]}))
 
     // stories = stories.filter(story => story !== null)
     return dispatch(fetchStoryByIdsSuccess({ stories }));
   } catch (error) {
-   
+
     dispatch(notifyError({ error: error.message }));
     return Promise.reject(error);
   }
@@ -179,13 +179,13 @@ export const getMoreStories = () => async (dispatch, getState) => {
       // no more stories to fetch from HN
       console.log("mo more left");
     } else if (stored.length < ids.length) {
-      // fetch more stories from ids pool 
+      // fetch more stories from ids pool
 
       const rangeFrom = stored.length;
       const rangeTo = stored.length + MAX_ITEMS_TO_LOAD;
 
       dispatch(fetchingStart());
-      
+
       return dispatch(fetchStoryByIds(ids.slice(rangeFrom, rangeTo)))
         .then(() => {
           dispatch(fetchingStop());

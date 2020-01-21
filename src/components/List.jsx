@@ -36,7 +36,7 @@ const List = () => {
   return (
     <Stories>
       {error && <Error errorMsg={error}></Error>}
-      {stored.filter(story => story && !story.dead && !story.deleted).map(story => (
+      {stored.filter(story => story && story.url && !story.dead && !story.deleted).map(story => (
         <Story key={story.id} story={story} />
       ))}
       {isFetching && <MoreStories></MoreStories>}
