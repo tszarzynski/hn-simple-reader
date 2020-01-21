@@ -1,0 +1,34 @@
+.item {
+    margin: 0 1em 2em 1em;
+}
+
+.link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.domain {
+    font-size: 0.5em
+}
+
+.details {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.details > span {
+    display: flex;
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+    .details {
+        justify-content: flex-end;
+    }
+
+    .details > span {
+        margin-left: 1em;
+    }
+}
