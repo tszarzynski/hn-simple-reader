@@ -19,7 +19,8 @@ const storiesSlice = createSlice({
     stored: [], // fetched stories
     avgOccuranceRatio: 1,
     isFetching: false,
-    error: ""
+    error: "",
+    showBookmarked: false
   },
   reducers: {
     fetchingStart(state) {
@@ -39,11 +40,28 @@ const storiesSlice = createSlice({
 
       state.stored = state.stored.concat(stories);
 
-      //https:stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
       state.avgOccuranceRatio =
         state.avgOccuranceRatio +
         (getRatio(stories.map(story => story.id)) - state.avgOccuranceRatio) /
           5;
+    },
+    toggleBookmarkPost(state, action) {
+      const { id } = action.payload;
+
+      state.stored = state.stored.map(story => {
+
+        if (story.id === id) {
+          const bookmarked = story.bookmarked || false;
+          
+          return {...story, bookmarked: !bookmarked}
+
+        } else {
+          return story;
+        }
+      })
+    },
+    toggleListView(state, action) {
+      state.showBookmarked = !state.showBookmarked;
     },
     notifyError(state, action) {
       const { error } = action.payload;
@@ -59,10 +77,21 @@ export const {
   fetchingStop,
   fetchStoryIdsSuccess,
   fetchStoryByIdsSuccess,
-  notifyError
+  notifyError,
+  toggleBookmarkPost,
+  toggleListView
 } = storiesSlice.actions;
 
 export default storiesSlice.reducer;
+
+
+export const listItems = (state) => {
+
+  return state.stories.showBookmarked 
+  ? state.stories.stored.filter(story => story.bookmarked === true)
+  : state.stories.stored;
+}
+
 
 /**
  * Fetch Top 500 story ids from HN

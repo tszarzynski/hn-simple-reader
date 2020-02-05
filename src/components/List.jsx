@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getMoreStories, getRecentStories } from "../store/storiesSlice";
+import { getMoreStories, getRecentStories, listItems } from "../store/storiesSlice";
 import Story from "./Story";
 import Stories from "./Stories";
 import MoreStories from "./MoreStories";
@@ -8,7 +8,8 @@ import Error from "./Error";
 
 const List = () => {
   const dispatch = useDispatch();
-  const { stored, isFetching, error } = useSelector(state => state.stories);
+  const { isFetching, error } = useSelector(state => state.stories);
+  const items = useSelector(listItems)
 
   // fetch on scroll
   useEffect(() => {
@@ -36,7 +37,7 @@ const List = () => {
   return (
     <Stories>
       {error && <Error errorMsg={error}></Error>}
-      {stored.filter(story => story && story.url && !story.dead && !story.deleted).map(story => (
+      {items.filter(story => story && story.url && !story.dead && !story.deleted).map(story => (
         <Story key={story.id} story={story} />
       ))}
       {isFetching && <MoreStories></MoreStories>}

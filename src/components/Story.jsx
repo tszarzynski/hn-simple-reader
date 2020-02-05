@@ -1,6 +1,7 @@
 import React from "react";
 import { extractDomain, timeSince, isValidUrl } from "../utils";
 import styles from "./Story.module.css";
+import BookmarkToggle from './BookmarkToggle'
 
 const Story = ({ story }) => {
   return (
@@ -20,6 +21,9 @@ const Story = ({ story }) => {
           </a>
         </div>
         <div className={styles.details}>
+          <div>
+            <BookmarkToggle story={story} />
+          </div>
           <span className={styles.time}>{timeSince(story.time)} ago</span>
           <span className={styles.author}>by {story.by}</span>
           <span> - </span>
